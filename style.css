@@ -7,3 +7,7 @@ body {
 #app {
     flex: 1;
 }
+
+#display {
+    font-size: 5rem;
+}
