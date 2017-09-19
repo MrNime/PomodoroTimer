@@ -1,119 +1,111 @@
-class Pomodoro {
-    constructor() {
-        this.display = document.querySelector('#display');
-        this.startBtns = document.querySelector('.card-header');
-        this.controlBtns = document.querySelector('.card-footer');
-        this.text = document.querySelector('#text');
+var display = document.querySelector('#display');
+var startBtns = document.querySelector('.card-header');
+var controlBtns = document.querySelector('.card-footer');
+var text = document.querySelector('#text');
 
-        this.interval;
-        this.startTime;
-        this.endTime;
-        //initialize timer with 25 mins left
-        this.savedDistance = 1500000;
-        this.savedSessionL = 1500000;
-        this.idToMs = {
-            shortBtn: 300000,
-            longBtn: 600000,
-            pomBtn: 1500000
-        }
-        this.addEvents();
-    }
+var interval;
+var startTime;
+var endTime;
+//initialize timer with 25 mins left
+var savedDistance = 1500000;
+var savedSessionL = 1500000;
+var idToMs = {
+    shortBtn: 300000,
+    longBtn: 600000,
+    pomBtn: 1500000
+}
 
-    addEvents() {
-        this.startBtns.addEventListener("click", function(e) {
-            if (e.target.id) {
-                pomodoro.savedSessionL = pomodoro.idToMs[e.target.id];
-                pomodoro.setTimer(pomodoro.idToMs[e.target.id]);
-                pomodoro.startTimer();
-                switch (e.target.id) {
-                    case 'pomBtn':
-                        pomodoro.text.textContent = 'WORK';
-                        break;
-                    case 'shortBtn':
-                    case 'longBtn':
-                        pomodoro.text.textContent = 'BREAK';
-                        break;
-                }
-            }
-        });
-        this.controlBtns.addEventListener("click", function(e) {
-            switch (e.target.id) {
-                case 'pause':
-                    pomodoro.pauseTimer();
-                    break;
-                case 'play':
-                    pomodoro.resumeTimer();
-                    break;
-                case 'reset':
-                    clearInterval(pomodoro.interval);
-                    pomodoro.setTimer(pomodoro.savedSessionL);
-                    break;
-            }
-        })
-    }
-
-    format(t) {
-        let tens_minutes = Math.floor(t / 600000);
-        let ones_minutes = Math.floor((t % 600000) / 60000);
-        let tens_seconds = Math.floor((t % 600000 % 60000) / 10000);
-        let ones_seconds = Math.floor(((t % 600000) % 60000 % 10000) / 1000);
-        return `${tens_minutes}${ones_minutes}:${tens_seconds}${ones_seconds}`
-    }
-
-    updateDisplay(t) {
-        display.textContent = this.format(t);
-    }
-
-    playSound() {
-        let audio = new Audio("beep.mp3");
-        audio.play();
-    }
-
-    setTimer(timerLength) {
-        this.startTime = Date.now();
-        this.endTime = this.startTime + timerLength;
-        pomodoro.updateDisplay(timerLength);
-    }
-
-    startTimer() {
-        this.interval = setInterval(this.updateTimer, 250);
-    }
-
-    stopTimer(timerID) {
-        clearInterval(timerID);
-        pomodoro.interval = false;
-    }
-
-    updateTimer() {
-        let currTime = Date.now();
-        let distance = pomodoro.endTime - currTime;
-        pomodoro.updateDisplay(distance);
-        if (distance < 1000) {
-            document.querySelector('body').style.backgroundColor = "green";
-            pomodoro.stopTimer(pomodoro.interval);
-            pomodoro.updateDisplay(0);
-            pomodoro.playSound();
+startBtns.addEventListener("click", function(e) {
+    if (e.target.id) {
+        //stop timer before setting a new one!
+        stopTimer(interval);
+        savedSessionL = idToMs[e.target.id];
+        setTimer(idToMs[e.target.id]);
+        startTimer();
+        switch (e.target.id) {
+            case 'pomBtn':
+            text.textContent = 'WORK';
+            break;
+            case 'shortBtn':
+            case 'longBtn':
+            text.textContent = 'BREAK';
+            break;
         }
     }
-
-    pauseTimer() {
-        console.log('pauseTimer');
-        if (pomodoro.interval) {
-            let currTime = Date.now();
-            this.savedDistance = pomodoro.endTime - currTime;
-            pomodoro.stopTimer(pomodoro.interval);
-        }
+});
+controlBtns.addEventListener("click", function(e) {
+    switch (e.target.id) {
+        case 'pause':
+        pauseTimer();
+        break;
+        case 'play':
+        resumeTimer();
+        break;
+        case 'reset':
+        stopTimer(interval);
+        savedDistance = savedSessionL;
+        setTimer(savedSessionL);
+        break;
     }
+});
 
-    resumeTimer() {
-        console.log('resumeTimer');
-        if (!pomodoro.interval) {
-            this.setTimer(pomodoro.savedDistance);
-            this.startTimer();
-        }
+function format(t) {
+    let tens_minutes = Math.floor(t / 600000);
+    let ones_minutes = Math.floor((t % 600000) / 60000);
+    let tens_seconds = Math.floor((t % 600000 % 60000) / 10000);
+    let ones_seconds = Math.floor(((t % 600000) % 60000 % 10000) / 1000);
+    return `${tens_minutes}${ones_minutes}:${tens_seconds}${ones_seconds}`
+}
+
+function updateDisplay(t) {
+    display.textContent = format(t);
+}
+
+function playSound() {
+    let audio = new Audio("beep.mp3");
+    audio.play();
+}
+
+function setTimer(timerLength) {
+    startTime = Date.now();
+    endTime = startTime + timerLength;
+    updateDisplay(timerLength);
+}
+
+function startTimer() {
+    interval = setInterval(updateTimer, 250);
+}
+
+function stopTimer(timerID) {
+    clearInterval(timerID);
+    interval = null;
+}
+
+function updateTimer() {
+    let currTime = Date.now();
+    let distance = endTime - currTime;
+    updateDisplay(distance);
+    if (distance < 1000) {
+        document.querySelector('body').style.backgroundColor = "green";
+        stopTimer(interval);
+        updateDisplay(0);
+        playSound();
     }
 }
 
-//event doesn't trigger when clicking on icons
+function pauseTimer() {
+    console.log('pauseTimer');
+    if (interval) {
+        let currTime = Date.now();
+        savedDistance = endTime - currTime;
+        stopTimer(interval);
+    }
+}
 
-var pomodoro = new Pomodoro();
+function resumeTimer() {
+    console.log('resumeTimer');
+    if (!interval) {
+        setTimer(savedDistance);
+        startTimer();
+    }
+}
