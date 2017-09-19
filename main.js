@@ -64,8 +64,16 @@ function updateDisplay(t) {
 function playSound() {
     let audio = new Audio("beep.mp3");
     audio.play();
+    let count = 1;
+    audio.onended = function() {
+        if(count < 4) {
+          count++;
+          this.play();
+       }
+    };
 }
-
+setTimer(10000);
+startTimer();
 function setTimer(timerLength) {
     startTime = Date.now();
     endTime = startTime + timerLength;
@@ -86,7 +94,7 @@ function updateTimer() {
     let distance = endTime - currTime;
     updateDisplay(distance);
     if (distance < 1000) {
-        document.querySelector('body').style.backgroundColor = "green";
+        // document.querySelector('body').style.backgroundColor = "green";
         stopTimer(interval);
         updateDisplay(0);
         playSound();
