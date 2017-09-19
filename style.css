@@ -13,5 +13,6 @@ body {
 }
 
 .fa {
+    /*needed because clicking the icon woudln't fire event otherwise.*/
     pointer-events:none;
 }
