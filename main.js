@@ -5,6 +5,9 @@ class Pomodoro {
         this.controlBtns = document.querySelector('.card-footer');
         this.text = document.querySelector('#text');
 
+        this.interval;
+        this.startTime;
+        this.endTime;
         //initialize timer with 25 mins left
         this.savedDistance = 1500000;
         this.savedSessionL = 1500000;
@@ -73,41 +76,44 @@ class Pomodoro {
     }
 
     startTimer() {
-        this.interval = setInterval(this.updateTimer, 1000);
+        this.interval = setInterval(this.updateTimer, 250);
+    }
+
+    stopTimer(timerID) {
+        clearInterval(timerID);
+        pomodoro.interval = false;
     }
 
     updateTimer() {
         let currTime = Date.now();
         let distance = pomodoro.endTime - currTime;
+        pomodoro.updateDisplay(distance);
         if (distance < 1000) {
             document.querySelector('body').style.backgroundColor = "green";
-            clearInterval(pomodoro.interval);
-            pomodoro.interval = false;
+            pomodoro.stopTimer(pomodoro.interval);
             pomodoro.updateDisplay(0);
             pomodoro.playSound();
         }
-        pomodoro.updateDisplay(distance);
     }
 
     pauseTimer() {
-        //only pause if timer is running
+        console.log('pauseTimer');
         if (pomodoro.interval) {
-            //save curr time
             let currTime = Date.now();
-            //save time to go
             this.savedDistance = pomodoro.endTime - currTime;
-            //stop timer
-            clearInterval(pomodoro.interval);
-            pomodoro.interval = false;
+            pomodoro.stopTimer(pomodoro.interval);
         }
     }
 
     resumeTimer() {
-        this.setTimer(pomodoro.savedDistance);
-        this.startTimer();
+        console.log('resumeTimer');
+        if (!pomodoro.interval) {
+            this.setTimer(pomodoro.savedDistance);
+            this.startTimer();
+        }
     }
-
-
 }
+
+//event doesn't trigger when clicking on icons
 
 var pomodoro = new Pomodoro();

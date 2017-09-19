@@ -11,3 +11,7 @@ body {
 #display {
     font-size: 5rem;
 }
+
+.fa {
+    pointer-events:none;
+}
