@@ -3,6 +3,7 @@ class Pomodoro {
         this.display = document.querySelector('#display');
         this.startBtns = document.querySelector('.card-header');
         this.controlBtns = document.querySelector('.card-footer');
+        this.text = document.querySelector('#text');
 
         //initialize timer with 25 mins left
         this.savedDistance = 1500000;
@@ -21,6 +22,15 @@ class Pomodoro {
                 pomodoro.savedSessionL = pomodoro.idToMs[e.target.id];
                 pomodoro.setTimer(pomodoro.idToMs[e.target.id]);
                 pomodoro.startTimer();
+                switch (e.target.id) {
+                    case 'pomBtn':
+                        pomodoro.text.textContent = 'WORK';
+                        break;
+                    case 'shortBtn':
+                    case 'longBtn':
+                        pomodoro.text.textContent = 'BREAK';
+                        break;
+                }
             }
         });
         this.controlBtns.addEventListener("click", function(e) {
@@ -52,7 +62,7 @@ class Pomodoro {
     }
 
     playSound() {
-        let audio = new Audio("http://soundbible.com/grab.php?id=1746&type=mp3");
+        let audio = new Audio("beep.mp3");
         audio.play();
     }
 
