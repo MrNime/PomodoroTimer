@@ -1,7 +1,42 @@
 class Pomodoro {
     constructor() {
-        this.ms = 0;
         this.display = document.querySelector('#display');
+        this.startBtns = document.querySelector('.card-header');
+        this.controlBtns = document.querySelector('.card-footer');
+
+        //initialize timer with 25 mins left
+        this.savedDistance = 1500000;
+        this.savedSessionL = 1500000;
+        this.idToMs = {
+            shortBtn: 300000,
+            longBtn: 600000,
+            pomBtn: 1500000
+        }
+        this.addEvents();
+    }
+
+    addEvents() {
+        this.startBtns.addEventListener("click", function(e) {
+            if (e.target.id) {
+                pomodoro.savedSessionL = pomodoro.idToMs[e.target.id];
+                pomodoro.setTimer(pomodoro.idToMs[e.target.id]);
+                pomodoro.startTimer();
+            }
+        });
+        this.controlBtns.addEventListener("click", function(e) {
+            switch (e.target.id) {
+                case 'pause':
+                    pomodoro.pauseTimer();
+                    break;
+                case 'play':
+                    pomodoro.resumeTimer();
+                    break;
+                case 'reset':
+                    clearInterval(pomodoro.interval);
+                    pomodoro.setTimer(pomodoro.savedSessionL);
+                    break;
+            }
+        })
     }
 
     format(t) {
@@ -34,33 +69,35 @@ class Pomodoro {
     updateTimer() {
         let currTime = Date.now();
         let distance = pomodoro.endTime - currTime;
+        if (distance < 1000) {
+            document.querySelector('body').style.backgroundColor = "green";
+            clearInterval(pomodoro.interval);
+            pomodoro.interval = false;
+            pomodoro.updateDisplay(0);
+            pomodoro.playSound();
+        }
         pomodoro.updateDisplay(distance);
+    }
+
+    pauseTimer() {
+        //only pause if timer is running
+        if (pomodoro.interval) {
+            //save curr time
+            let currTime = Date.now();
+            //save time to go
+            this.savedDistance = pomodoro.endTime - currTime;
+            //stop timer
+            clearInterval(pomodoro.interval);
+            pomodoro.interval = false;
+        }
+    }
+
+    resumeTimer() {
+        this.setTimer(pomodoro.savedDistance);
+        this.startTimer();
     }
 
 
 }
 
 var pomodoro = new Pomodoro();
-
-idToMs = {
-    shortBtn: 300000,
-    longBtn: 600000,
-    pomBtn: 1500000
-}
-function event(e) {
-    if (e.target.id) {
-        pomodoro.setTimer(idToMs[e.target.id]);
-        pomodoro.startTimer();
-    }
-}
-var startButtons = document.querySelector('.card-header');
-startButtons.addEventListener("click", event);
-// longBreakBtn.addEventListener('mouseup', console.log(2))
-// pomodoro.startTimer(pomodoro.pomodoroMs)
-//
-// countDownTime = Date.now() + 300000;
-// setInterval(function() {
-//     let currTime = Date.now();
-//     let distance = countDownTime - currTime;
-//     pomodoro.updateDisplay(distance);
-// }, 1000);
