@@ -1,15 +1,15 @@
-var display = document.querySelector('#display');
-var startBtns = document.querySelector('.card-header');
-var controlBtns = document.querySelector('.card-footer');
-var text = document.querySelector('#text');
+var display = document.querySelector('#display'),
+startBtns = document.querySelector('.card-header'),
+controlBtns = document.querySelector('.card-footer'),
+text = document.querySelector('#text'),
 
-var interval;
-var startTime;
-var endTime;
+interval,
+startTime,
+endTime,
 //initialize timer with 25 mins left
-var savedDistance = 1500000;
-var savedSessionL = 1500000;
-var idToMs = {
+savedDistance = 1500000,
+savedSessionL = 1500000;
+const idToMs = {
     shortBtn: 300000,
     longBtn: 600000,
     pomBtn: 1500000
@@ -72,8 +72,7 @@ function playSound() {
        }
     };
 }
-setTimer(10000);
-startTimer();
+
 function setTimer(timerLength) {
     startTime = Date.now();
     endTime = startTime + timerLength;
@@ -102,7 +101,6 @@ function updateTimer() {
 }
 
 function pauseTimer() {
-    console.log('pauseTimer');
     if (interval) {
         let currTime = Date.now();
         savedDistance = endTime - currTime;
@@ -111,7 +109,6 @@ function pauseTimer() {
 }
 
 function resumeTimer() {
-    console.log('resumeTimer');
     if (!interval) {
         setTimer(savedDistance);
         startTimer();
