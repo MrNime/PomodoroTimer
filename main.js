@@ -46,6 +46,12 @@ controlBtns.addEventListener("click", function(e) {
         savedDistance = savedSessionL;
         setTimer(savedSessionL);
         break;
+        case 'increase':
+        changeTimer("up");
+        break;
+        case 'decrease':
+        changeTimer("down");
+        break;
     }
 });
 
@@ -112,5 +118,18 @@ function resumeTimer() {
     if (!interval) {
         setTimer(savedDistance);
         startTimer();
+    }
+}
+
+function changeTimer(direction) {
+    let wasRunning = interval;
+    pauseTimer();
+    direction === "up" ?
+     savedDistance += 60000
+     :
+     savedDistance -= 60000;
+    updateDisplay(savedDistance);
+    if (wasRunning) {
+        resumeTimer();
     }
 }
